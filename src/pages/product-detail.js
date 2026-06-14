@@ -192,11 +192,37 @@ export async function productDetailPage(request, env) {
             // Pre-fill the contact form message with product context
             var productName = product.name;
             var productUrl = window.location.href;
-            var messageField = document.getElementById('cfp-message');
-            if (messageField && typeof window.toggleContactFormPanel === 'function') {
-              messageField.value = 'I am interested in: ' + productName + '\\nProduct URL: ' + productUrl + '\\n\\n';
-              window.toggleContactFormPanel();
-            }
+            
+            // Defensive retry logic: wait for toggleContactFormPanel to become available
+            var maxAttempts = 60; // 60 attempts × 50ms = 3 seconds max wait
+            var attemptCount = 0;
+            var pollInterval = 50; // Poll every 50ms
+            
+            var pollForFunction = function() {
+              attemptCount++;
+              
+              if (typeof window.toggleContactFormPanel === 'function') {
+                // Function is available - proceed with opening the panel
+                var messageField = document.getElementById('cfp-message');
+                if (messageField) {
+                  messageField.value = 'I am interested in: ' + productName + '\\nProduct URL: ' + productUrl + '\\n\\n';
+                }
+                window.toggleContactFormPanel();
+              } else if (attemptCount < maxAttempts) {
+                // Function not yet available, try again after delay
+                setTimeout(pollForFunction, pollInterval);
+              } else {
+                // Timeout reached - display error notification
+                if (typeof window.showNotification === 'function') {
+                  window.showNotification('Contact form is temporarily unavailable. Please try again in a moment.', 'error');
+                } else {
+                  alert('Contact form is temporarily unavailable. Please try again in a moment.');
+                }
+              }
+            };
+            
+            // Start polling
+            pollForFunction();
           });
 
         } catch (error) {

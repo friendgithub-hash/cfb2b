@@ -960,6 +960,35 @@ export function createLayout(
 
   <script>
     (function() {
+      // STATE ISOLATION GUARD: toggleContactFormPanel() only manipulates the
+      // #contact-form-panel DOM element and the bubble icon. It does NOT read
+      // from or write to any live chat IIFE variables (chatSessionId,
+      // lastMsgId, pollTimer, panelOpen, sessionReady, unreadCount,
+      // chatVisitorName).
+      function toggleContactFormPanel() {
+        const cfpPanel = document.getElementById('contact-form-panel');
+        if (!cfpPanel) return;
+
+        const isOpen = cfpPanel.classList.contains('open');
+        cfpPanel.classList.toggle('open', !isOpen);
+
+        document.getElementById('chat-bubble').innerHTML = !isOpen
+          ? '✕<span id="chat-unread-badge" style="display:none"></span>'
+          : '💬<span id="chat-unread-badge" style="display:none"></span>';
+
+        if (!isOpen) {
+          // Panel is now open — focus first input
+          setTimeout(() => {
+            const firstInput = cfpPanel.querySelector('input, textarea');
+            if (firstInput) firstInput.focus();
+          }, 100);
+        }
+      }
+
+      // Expose toggleContactFormPanel IMMEDIATELY at the start of the IIFE
+      // to ensure it's accessible when product-detail.js "Send Inquiry" button is clicked
+      window.toggleContactFormPanel = toggleContactFormPanel;
+
       const POLL_INTERVAL = 3000;
       let chatSessionId = sessionStorage.getItem('chat_session_id');
       let chatVisitorName = sessionStorage.getItem('chat_visitor_name');
@@ -1043,34 +1072,6 @@ export function createLayout(
           }
         }
       };
-
-      // STATE ISOLATION GUARD: toggleContactFormPanel() only manipulates the
-      // #contact-form-panel DOM element and the bubble icon. It does NOT read
-      // from or write to any live chat IIFE variables (chatSessionId,
-      // lastMsgId, pollTimer, panelOpen, sessionReady, unreadCount,
-      // chatVisitorName).
-      function toggleContactFormPanel() {
-        const cfpPanel = document.getElementById('contact-form-panel');
-        if (!cfpPanel) return;
-
-        const isOpen = cfpPanel.classList.contains('open');
-        cfpPanel.classList.toggle('open', !isOpen);
-
-        document.getElementById('chat-bubble').innerHTML = !isOpen
-          ? '✕<span id="chat-unread-badge" style="display:none"></span>'
-          : '💬<span id="chat-unread-badge" style="display:none"></span>';
-
-        if (!isOpen) {
-          // Panel is now open — focus first input
-          setTimeout(() => {
-            const firstInput = cfpPanel.querySelector('input, textarea');
-            if (firstInput) firstInput.focus();
-          }, 100);
-        }
-      }
-
-      // Expose toggleContactFormPanel for the ✕ close button
-      window.toggleContactFormPanel = toggleContactFormPanel;
 
       // STATE ISOLATION GUARD: submitContactForm() operates exclusively on
       // contact form panel DOM elements (#cfp-*). It does NOT read from or
