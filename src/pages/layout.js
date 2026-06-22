@@ -590,7 +590,8 @@ export function createLayout(
           if (logo && settings.site_name) {
             logo.textContent = settings.site_name;
           }
-                       // Update footer quotes slider
+
+          // Update footer quotes slider
           for (let i = 1; i <= 5; i++) {
             const quoteEl = document.querySelector(\`.quote-item[data-index="\${i-1}"] q\`);
             if (quoteEl && settings[\`quote_\${i}\`]) {
@@ -600,10 +601,9 @@ export function createLayout(
 
           // Update footer Contact Info
           const contactItems = document.querySelectorAll('.footer-contact ul li');
-          if (contactItems.length >= 3) {
+          if (contactItems.length >= 2) {
             if (settings.email) contactItems[0].textContent = \`Email: \${settings.email}\`;
-            if (settings.phone) contactItems[1].textContent = \`Phone: \${settings.phone}\`;
-            if (settings.address) contactItems[2].textContent = \`Address: \${settings.address}\`;
+            if (settings.address) contactItems[1].textContent = \`Address: \${settings.address}\`;
           }
 
           // Update social media links
@@ -1436,7 +1436,6 @@ function createFooter(settings = null) {
         <h3>Contact Info</h3>
         <ul>
           <li>Email: info@example.com</li>
-          <li>Phone: +1 234 567 8900</li>
           <li>Address: 123 Business St, City, Country</li>
         </ul>
       </div>

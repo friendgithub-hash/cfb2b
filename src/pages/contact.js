@@ -104,15 +104,6 @@ export async function contactPage(env) {
               </div>
             </div>
 
-            <div style="display: flex; align-items: start; margin-bottom: 1.5rem;">
-              <div style="font-size: 1.5rem; margin-right: 1rem; color: var(--primary-color);">📞</div>
-              <div>
-                <h3 style="font-weight: 600; margin-bottom: 0.25rem;">Phone</h3>
-                <p id="contact-phone-info" style="color: var(--text-light);">
-                  +1 234 567 8900
-                </p>
-              </div>
-            </div>
 
             <div style="display: flex; align-items: start;">
               <div style="font-size: 1.5rem; margin-right: 1rem; color: var(--primary-color);">🕐</div>
@@ -238,11 +229,6 @@ export async function contactPage(env) {
               emailLink.textContent = settings.email;
             }
 
-            // Update phone
-            const phoneInfo = document.getElementById('contact-phone-info');
-            if (phoneInfo && settings.phone) {
-              phoneInfo.textContent = settings.phone;
-            }
           }
         } catch (error) {
           console.error('Error loading contact information:', error);
